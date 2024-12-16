@@ -1,0 +1,6 @@
+@ThAmCo.Products.Api_HostAddress = http://localhost:5020
+
+GET {{ThAmCo.Products.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
