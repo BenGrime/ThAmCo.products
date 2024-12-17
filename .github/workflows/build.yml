@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
+        run: dotnet test ThAmCo.Products.Api.Tests/ThAmCo.Products.Api.Tests.csproj --configuration Release --no-build --verbosity normal
       - name: Prepare publication files
         run: dotnet publish -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
       - name: Deploy to Azure App Service
