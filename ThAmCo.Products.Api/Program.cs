@@ -61,7 +61,7 @@ var products = new[]{
     new Product(4, "Smart Speaker", "Smart speaker with voice assistant", 2, "EcoBrands", 1, "Electronics", true, 199.99)   
 };
 
-app.MapGet("/products", [Authorize] () =>
+app.MapGet("/products", () =>
 {
     return products;
 })
