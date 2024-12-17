@@ -54,9 +54,25 @@ app.MapGet("/weatherforecast", [Authorize] () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+var products = new[]{
+    new Product(1, "Smartphone X", "Latest flagship smartphone", 1, "TechCorp", 1, "Electronics", true, 999.99),
+    new Product(2, "Smart TV", "4K UHD Smart TV", 1, "TechCorp", 1, "Electronics", true, 799.99),
+    new Product(3, "Smart Fridge", "Energy-efficient smart fridge", 2, "EcoBrands", 2, "Home Appliances", true, 1499.99),
+    new Product(4, "Smart Speaker", "Smart speaker with voice assistant", 2, "EcoBrands", 1, "Electronics", true, 199.99)   
+};
+
+app.MapGet("/products", [Authorize] () =>
+{
+    return products;
+})
+.WithName("GetProducts")
+.WithOpenApi();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+record Product(int Id, string? Name, string? Description, int BrandId, string? BrandName, int CategoryId, string? CategoryName, bool InStock, double Price);
