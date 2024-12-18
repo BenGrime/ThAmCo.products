@@ -68,6 +68,15 @@ app.MapGet("/products", [Authorize] () =>
 });
 // .WithName("GetProducts")
 // .WithOpenApi();
+app.MapGet("/products/{id}", [Authorize] (int id) =>
+{
+    var product = products.FirstOrDefault(p => p.Id == id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(product);
+});
 
 app.Run();
 
