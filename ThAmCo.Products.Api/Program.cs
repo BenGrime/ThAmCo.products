@@ -92,26 +92,55 @@ app.UseAuthorization();
 // .WithOpenApi();
 
 var products = new[]{
-    new Product(1, "Smartphone X", "Latest flagship smartphone", 1, "TechCorp", 1, "Electronics", true, 999.99),
-    new Product(2, "Smart TV", "4K UHD Smart TV", 1, "TechCorp", 1, "Electronics", true, 799.99),
-    new Product(3, "Smart Fridge", "Energy-efficient smart fridge", 2, "EcoBrands", 2, "Home Appliances", true, 1499.99),
-    new Product(4, "Smart Speaker", "Smart speaker with voice assistant", 2, "EcoBrands", 1, "Electronics", true, 199.99)   
+    new ProductTemp(1, "Smartphone X", "Latest flagship smartphone", 1, "TechCorp", 1, "Electronics", true, 999.99),
+    new ProductTemp(2, "Smart TV", "4K UHD Smart TV", 1, "TechCorp", 1, "Electronics", true, 799.99),
+    new ProductTemp(3, "Smart Fridge", "Energy-efficient smart fridge", 2, "EcoBrands", 2, "Home Appliances", true, 1499.99),
+    new ProductTemp(4, "Smart Speaker", "Smart speaker with voice assistant", 2, "EcoBrands", 1, "Electronics", true, 199.99)   
 };
 
-app.MapGet("/products", [Authorize] () =>
+var responseMessage = app.Configuration["Message"] ?? "";
+
+app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  => 
 {
-    return products;
+    return await dbx.Products.ToListAsync();
 });
 // .WithName("GetProducts")
 // .WithOpenApi();
-app.MapGet("/products/{id}", [Authorize] (int id) =>
+app.MapGet("/products/{id}", [Authorize] async(ProductsDbContext dbx, int id) =>
 {
-    var product = products.FirstOrDefault(p => p.Id == id);
+    // var p = products.FirstOrDefault(p => p.Id == id);
+    // if (product == null)
+    // {
+    //     return Results.NotFound();
+    // }
+    // return Results.Ok(product);
+
+    var product = await dbx.Products
+                           .Include(p => p.Brand)
+                           .Include(p => p.Category)
+                           .FirstOrDefaultAsync(p => p.Id == id);
     if (product == null)
     {
         return Results.NotFound();
     }
     return Results.Ok(product);
+    
+});
+
+app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dto) =>
+{
+    var product = new Product
+    {
+        Name = dto.Name,
+        Description = dto.Description,
+        BrandId = dto.BrandId,
+        CategoryId = dto.CategoryId,
+        InStock = dto.InStock,
+        Price = dto.Price
+    };
+    await dbx.Products.AddAsync(product);
+    await dbx.SaveChangesAsync();
+    return responseMessage;
 });
 
 app.Run();
@@ -121,4 +150,5 @@ app.Run();
 //     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 // }
 
-record Product(int Id, string? Name, string? Description, int BrandId, string? BrandName, int CategoryId, string? CategoryName, bool InStock, double Price);
+record ProductTemp(int Id, string? Name, string? Description, int BrandId, string? BrandName, int CategoryId, string? CategoryName, bool InStock, double Price);
+public record ProductDto(string Name, string Description, int BrandId, int CategoryId, bool InStock, double Price);
