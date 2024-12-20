@@ -44,8 +44,8 @@ builder.Services.AddDbContext<ProductsDbContext>(options =>
     }
     else
     {
-        var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-        //var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+        //var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        var cs = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
         sqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
