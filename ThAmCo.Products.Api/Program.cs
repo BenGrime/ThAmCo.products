@@ -44,14 +44,15 @@ builder.Services.AddDbContext<ProductsDbContext>(options =>
     }
     else
     {
-        var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+        var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        //var cs = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
         sqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(6),
             errorNumbersToAdd: null
-        )
-    );
+            )
+        );
     }
 });
 
@@ -100,32 +101,43 @@ var products = new[]{
 
 var responseMessage = app.Configuration["Message"] ?? "";
 
-app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  => 
+app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx, ILogger<Program> logger)  => 
 {
-    var products = await dbx.Products
-                            .Include(p => p.Brand)
-                            .Include(p => p.Category)
-                            .Select(p => new ProductDto
-                            {
-                                Id = p.Id,
-                                Name = p.Name,
-                                Description = p.Description,
-                                Brand = new BrandDto
+    try
+    {
+        var products = await dbx.Products
+                                .Include(p => p.Brand)
+                                .Include(p => p.Category)
+                                .Select(p => new ProductDto
                                 {
-                                    Id = p.Brand.Id,
-                                    Name = p.Brand.Name
-                                },
-                                Category = new CategoryDto
-                                {
-                                    Id = p.Category.Id,
-                                    Name = p.Category.Name,
-                                    Description = p.Category.Description
-                                } ,
-                                InStock = p.InStock,
-                                Price = (decimal)p.Price
-                            })
-                            .ToListAsync();
-    return Results.Ok(products);
+                                    Id = p.Id,
+                                    Name = p.Name,
+                                    Description = p.Description,
+                                    Brand = new BrandDto
+                                    {
+                                        Id = p.Brand.Id,
+                                        Name = p.Brand.Name
+                                    },
+                                    Category = new CategoryDto
+                                    {
+                                        Id = p.Category.Id,
+                                        Name = p.Category.Name,
+                                        Description = p.Category.Description
+                                    },
+                                    InStock = p.InStock,
+                                    Price = (decimal)p.Price
+                                })
+                                .ToListAsync();
+        return Results.Ok(products);
+    }
+    catch (Exception ex)
+    {
+        // Log the exception details
+        logger.LogError(ex, "An error occurred while processing the request.");
+
+        // Return a 500 Internal Server Error response
+        return Results.Problem($"An error occurred while processing your request: {ex.Message}", statusCode: 500);
+    }
     
     // return await dbx.Products
     //                 .Include(p => p.Brand)
