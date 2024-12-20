@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ThAmCo.Products.Api.Migrations
+namespace ThAmCo.Products.Api.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -18,8 +18,7 @@ namespace ThAmCo.Products.Api.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    AvailableProductCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,9 +31,8 @@ namespace ThAmCo.Products.Api.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    AvailableProductCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,14 +45,12 @@ namespace ThAmCo.Products.Api.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     BrandId = table.Column<int>(type: "INTEGER", nullable: false),
-                    BrandName = table.Column<string>(type: "TEXT", nullable: true),
                     CategoryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CategoryName = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    inStock = table.Column<bool>(type: "INTEGER", nullable: false),
-                    price = table.Column<double>(type: "REAL", nullable: false)
+                    InStock = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Price = table.Column<double>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,36 +71,30 @@ namespace ThAmCo.Products.Api.Migrations
 
             migrationBuilder.InsertData(
                 table: "Brands",
-                columns: new[] { "Id", "AvailableProductCount", "Name" },
+                columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
-                    { 1, 10, "TechCorp" },
-                    { 2, 15, "EcoBrands" }
+                    { 1, "TechCorp" },
+                    { 2, "EcoBrands" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "Id", "AvailableProductCount", "Description", "Name" },
+                columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 1, 12, "Gadgets and Devices", "Electronics" },
-                    { 2, 8, "Household essentials", "Home Appliances" }
+                    { 1, "Gadgets and Devices", "Electronics" },
+                    { 2, "Household essentials", "Home Appliances" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "BrandId", "BrandName", "CategoryId", "CategoryName", "Description", "Name", "inStock", "price" },
+                columns: new[] { "Id", "BrandId", "CategoryId", "Description", "InStock", "Name", "Price" },
                 values: new object[,]
                 {
-                    { 1, 1, null, 1, null, "Latest flagship smartphone", "Smartphone X", true, 999.99000000000001 },
-                    { 2, 2, null, 2, null, "High-efficiency kitchen blender", "EcoFriendly Blender", true, 79.989999999999995 }
+                    { 1, 1, 1, "Latest flagship smartphone", true, "Smartphone X", 999.99000000000001 },
+                    { 2, 2, 2, "High-efficiency kitchen blender", true, "EcoFriendly Blender", 79.989999999999995 }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Brands_Name",
-                table: "Brands",
-                column: "Name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_BrandId",

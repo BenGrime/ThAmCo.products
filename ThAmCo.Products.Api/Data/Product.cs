@@ -2,28 +2,14 @@
 {
     public class Product
     {
-        public int BrandId { get; set; }
-
-        public string?BrandName { get; set; }
-
-        public int CategoryId { get; set; }
-
-        public string? CategoryName { get; set; }
-
-        public string? Description { get; set; }
-
         public int Id { get; set; }
-
-        public string? Name { get; set; }
-
-        public Boolean inStock { get; set; }
-
-        public double price { get; set; }
-
-        // Navigation properties
-
-        public Brand Brand { get; set; } = null!;
-
-        public Category Category { get; set; } = null!;
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public int BrandId { get; set; }
+        public Brand? Brand { get; set; }
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
+        public bool InStock { get; set; }
+        public double Price { get; set; }
     }
 }

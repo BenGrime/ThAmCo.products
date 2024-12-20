@@ -6,7 +6,7 @@ using ThAmCo.Products.Api.Data;
 
 #nullable disable
 
-namespace ThAmCo.Products.Api.Migrations
+namespace ThAmCo.Products.Api.Data.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
     partial class ProductsDbContextModelSnapshot : ModelSnapshot
@@ -22,16 +22,11 @@ namespace ThAmCo.Products.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AvailableProductCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Brands");
 
@@ -39,13 +34,11 @@ namespace ThAmCo.Products.Api.Migrations
                         new
                         {
                             Id = 1,
-                            AvailableProductCount = 10,
                             Name = "TechCorp"
                         },
                         new
                         {
                             Id = 2,
-                            AvailableProductCount = 15,
                             Name = "EcoBrands"
                         });
                 });
@@ -56,13 +49,12 @@ namespace ThAmCo.Products.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AvailableProductCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -73,14 +65,12 @@ namespace ThAmCo.Products.Api.Migrations
                         new
                         {
                             Id = 1,
-                            AvailableProductCount = 12,
                             Description = "Gadgets and Devices",
                             Name = "Electronics"
                         },
                         new
                         {
                             Id = 2,
-                            AvailableProductCount = 8,
                             Description = "Household essentials",
                             Name = "Home Appliances"
                         });
@@ -95,25 +85,21 @@ namespace ThAmCo.Products.Api.Migrations
                     b.Property<int>("BrandId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("BrandName")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CategoryName")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("inStock")
+                    b.Property<bool>("InStock")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("price")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Price")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
@@ -131,9 +117,9 @@ namespace ThAmCo.Products.Api.Migrations
                             BrandId = 1,
                             CategoryId = 1,
                             Description = "Latest flagship smartphone",
+                            InStock = true,
                             Name = "Smartphone X",
-                            inStock = true,
-                            price = 999.99000000000001
+                            Price = 999.99000000000001
                         },
                         new
                         {
@@ -141,9 +127,9 @@ namespace ThAmCo.Products.Api.Migrations
                             BrandId = 2,
                             CategoryId = 2,
                             Description = "High-efficiency kitchen blender",
+                            InStock = true,
                             Name = "EcoFriendly Blender",
-                            inStock = true,
-                            price = 79.989999999999995
+                            Price = 79.989999999999995
                         });
                 });
 

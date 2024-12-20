@@ -14,9 +14,7 @@ namespace ThAmCo.Products.Api.Data
         //     DbPath = Path.Join(path, "ThAmCo.Products.db");
         // }
 
-        public DbSet<Product> Products { get; set; } = null!;
-        public DbSet<Brand> Brands { get; set; } = null!;
-        public DbSet<Category> Categories { get; set; } = null!;
+        
         public ProductsDbContext(DbContextOptions<ProductsDbContext> options)
             : base(options)
         {
@@ -99,22 +97,15 @@ namespace ThAmCo.Products.Api.Data
                  .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Add unique constraint to Brand Name
-            modelBuilder.Entity<Brand>(x =>
-            {
-                x.HasIndex(b => b.Name)
-                 .IsUnique();
-            });
-
             // Seed data
             modelBuilder.Entity<Brand>().HasData(
-                new Brand { Id = 1, Name = "TechCorp", AvailableProductCount = 10 },
-                new Brand { Id = 2, Name = "EcoBrands", AvailableProductCount = 15 }
+                new Brand { Id = 1, Name = "TechCorp" },
+                new Brand { Id = 2, Name = "EcoBrands"}
             );
 
             modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Electronics", Description = "Gadgets and Devices", AvailableProductCount = 12 },
-                new Category { Id = 2, Name = "Home Appliances", Description = "Household essentials", AvailableProductCount = 8 }
+                new Category { Id = 1, Name = "Electronics", Description = "Gadgets and Devices" },
+                new Category { Id = 2, Name = "Home Appliances", Description = "Household essentials"}
             );
 
             modelBuilder.Entity<Product>().HasData(
@@ -125,8 +116,8 @@ namespace ThAmCo.Products.Api.Data
                     Description = "Latest flagship smartphone",
                     BrandId = 1,
                     CategoryId = 1,
-                    inStock = true,
-                    price = 999.99
+                    InStock = true,
+                    Price = 999.99
                 },
                 new Product
                 {
@@ -135,16 +126,14 @@ namespace ThAmCo.Products.Api.Data
                     Description = "High-efficiency kitchen blender",
                     BrandId = 2,
                     CategoryId = 2,
-                    inStock = true,
-                    price = 79.99
+                    InStock = true,
+                    Price = 79.99
                 }
             );
         }
 
-        // public DbSet<Brand> Brands { get; set; }
-        // public DbSet<Category> Categories { get; set; }
-        // public DbSet<Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; } 
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
-
 }
-
