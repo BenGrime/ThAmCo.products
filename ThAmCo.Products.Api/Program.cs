@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using ThAmCo.Products.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,6 +21,18 @@ builder.Services
         options.Audience = builder.Configuration["Auth:Audience"];
     });
 builder.Services.AddAuthorization();
+
+builder.Services.AddDbContext<ProductsDbContext>(options =>
+{
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(6),
+            errorNumbersToAdd: null
+        )
+    );
+});
 
 
 var app = builder.Build();
