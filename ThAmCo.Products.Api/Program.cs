@@ -102,7 +102,6 @@ var responseMessage = app.Configuration["Message"] ?? "";
 
 app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  => 
 {
-
     var products = await dbx.Products
                             .Include(p => p.Brand)
                             .Include(p => p.Category)
@@ -121,12 +120,13 @@ app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  =>
                                     Id = p.Category.Id,
                                     Name = p.Category.Name,
                                     Description = p.Category.Description
-                                },
+                                } ,
                                 InStock = p.InStock,
                                 Price = (decimal)p.Price
                             })
                             .ToListAsync();
     return Results.Ok(products);
+    
     // return await dbx.Products
     //                 .Include(p => p.Brand)
     //                 .Include(p => p.Category)
