@@ -102,7 +102,37 @@ var responseMessage = app.Configuration["Message"] ?? "";
 
 app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  => 
 {
-    return await dbx.Products.ToListAsync();
+
+    var products = await dbx.Products
+                            .Include(p => p.Brand)
+                            .Include(p => p.Category)
+                            .Select(p => new ProductDto
+                            {
+                                Id = p.Id,
+                                Name = p.Name,
+                                Description = p.Description,
+                                Brand = new BrandDto
+                                {
+                                    Id = p.Brand.Id,
+                                    Name = p.Brand.Name
+                                },
+                                Category = new CategoryDto
+                                {
+                                    Id = p.Category.Id,
+                                    Name = p.Category.Name,
+                                    Description = p.Category.Description
+                                },
+                                InStock = p.InStock,
+                                Price = (decimal)p.Price
+                            })
+                            .ToListAsync();
+    return Results.Ok(products);
+    // return await dbx.Products
+    //                 .Include(p => p.Brand)
+    //                 .Include(p => p.Category)
+    //                 .ToListAsync();
+
+                    
 });
 // .WithName("GetProducts")
 // .WithOpenApi();
@@ -133,10 +163,19 @@ app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dt
     {
         Name = dto.Name,
         Description = dto.Description,
-        BrandId = dto.BrandId,
-        CategoryId = dto.CategoryId,
+        Brand = new Brand
+        {
+            Id = dto.Brand.Id,
+            Name = dto.Brand.Name
+        },
+        Category = new Category
+        {
+            Id = dto.Category.Id,
+            Name = dto.Category.Name,
+            Description = dto.Category.Description
+        },
         InStock = dto.InStock,
-        Price = dto.Price
+        Price = (double)dto.Price
     };
     await dbx.Products.AddAsync(product);
     await dbx.SaveChangesAsync();
@@ -151,4 +190,4 @@ app.Run();
 // }
 
 record ProductTemp(int Id, string? Name, string? Description, int BrandId, string? BrandName, int CategoryId, string? CategoryName, bool InStock, double Price);
-public record ProductDto(string Name, string Description, int BrandId, int CategoryId, bool InStock, double Price);
+//public record ProductDto(string Name, string Description, int BrandId, int CategoryId, bool InStock, double Price);
