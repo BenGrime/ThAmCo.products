@@ -19,5 +19,11 @@
         public Boolean inStock { get; set; }
 
         public double price { get; set; }
+
+        // Navigation properties
+
+        public Brand Brand { get; set; } = null!;
+
+        public Category Category { get; set; } = null!;
     }
 }
