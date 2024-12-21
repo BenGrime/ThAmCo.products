@@ -10,7 +10,7 @@ using ThAmCo.Products.Api.Data;
 namespace ThAmCo.Products.Api.Data.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
-    [Migration("20241220161124_InitialCreate")]
+    [Migration("20241220232155_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

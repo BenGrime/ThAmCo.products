@@ -2,10 +2,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.Globalization;
 using ThAmCo.Products.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Set the default culture to invariant culture
+var cultureInfo = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -174,6 +180,7 @@ app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dt
     var product = new Product
     {
         Name = dto.Name,
+        Id = dto.Id,
         Description = dto.Description,
         Brand = new Brand
         {
