@@ -8,11 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Set the default culture to invariant culture
-var cultureInfo = CultureInfo.InvariantCulture;
-CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -30,36 +25,36 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ProductsDbContext>(options =>
 {
-    // var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-    // options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
-    //     sqlOptions.EnableRetryOnFailure(
-    //         maxRetryCount: 5,
-    //         maxRetryDelay: TimeSpan.FromSeconds(6),
-    //         errorNumbersToAdd: null
-    //     )
-    // );
-
-    if (builder.Environment.IsDevelopment())
-    {
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var path = Environment.GetFolderPath(folder);
-        var dbPath = System.IO.Path.Join(path, "ThAmCo.Products.db");
-        options.UseSqlite($"Data Source={dbPath}");
-        options.EnableDetailedErrors();
-        options.EnableSensitiveDataLogging();
-    }
-    else
-    {
-        //var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-        var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-        options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
         sqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(6),
             errorNumbersToAdd: null
-            )
-        );
-    }
+        )
+    );
+
+    // if (builder.Environment.IsDevelopment())
+    // {
+    //     // var folder = Environment.SpecialFolder.LocalApplicationData;
+    //     // var path = Environment.GetFolderPath(folder);
+    //     // var dbPath = System.IO.Path.Join(path, "ThAmCo.Products.db");
+    //     // options.UseSqlite($"Data Source={dbPath}");
+    //     // options.EnableDetailedErrors();
+    //     // options.EnableSensitiveDataLogging();
+    // }
+    // else
+    // {
+    //     //var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+    //     var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+    //     options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
+    //     sqlOptions.EnableRetryOnFailure(
+    //         maxRetryCount: 5,
+    //         maxRetryDelay: TimeSpan.FromSeconds(6),
+    //         errorNumbersToAdd: null
+    //         )
+    //     );
+    // }
 });
 
 
@@ -98,59 +93,19 @@ app.UseAuthorization();
 // .WithName("GetWeatherForecast")
 // .WithOpenApi();
 
-var products = new[]{
-    new ProductTemp(1, "Smartphone X", "Latest flagship smartphone", 1, "TechCorp", 1, "Electronics", true, 999.99),
-    new ProductTemp(2, "Smart TV", "4K UHD Smart TV", 1, "TechCorp", 1, "Electronics", true, 799.99),
-    new ProductTemp(3, "Smart Fridge", "Energy-efficient smart fridge", 2, "EcoBrands", 2, "Home Appliances", true, 1499.99),
-    new ProductTemp(4, "Smart Speaker", "Smart speaker with voice assistant", 2, "EcoBrands", 1, "Electronics", true, 199.99)   
+var products = new[] {
+    new ProductTemp(1, "Smartphone X", "Latest flagship smartphone", "TechCorp", "Leading innovation in electronics", "Electronics", "Devices that enhance daily life through technology", true, 999.99),
+    new ProductTemp(2, "Smart TV", "4K UHD Smart TV", "TechCorp", "Pioneering 4K display technology", "Electronics", "High-quality entertainment through cutting-edge tech", true, 799.99),
+    new ProductTemp(3, "Smart Fridge", "Energy-efficient smart fridge", "EcoBrands", "Eco-friendly appliances for modern living", "Home Appliances", "Appliances designed for smart, sustainable living", true, 1499.99),
+    new ProductTemp(4, "Smart Speaker", "Smart speaker with voice assistant", "EcoBrands", "Combining sound and AI for a smarter home", "Electronics", "Smart devices that improve home convenience", true, 199.99)
 };
+
 
 var responseMessage = app.Configuration["Message"] ?? "";
 
-app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx, ILogger<Program> logger)  => 
+app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  => 
 {
-    try
-    {
-        var products = await dbx.Products
-                                .Include(p => p.Brand)
-                                .Include(p => p.Category)
-                                .Select(p => new ProductDto
-                                {
-                                    Id = p.Id,
-                                    Name = p.Name,
-                                    Description = p.Description,
-                                    Brand = new BrandDto
-                                    {
-                                        Id = p.Brand.Id,
-                                        Name = p.Brand.Name
-                                    },
-                                    Category = new CategoryDto
-                                    {
-                                        Id = p.Category.Id,
-                                        Name = p.Category.Name,
-                                        Description = p.Category.Description
-                                    },
-                                    InStock = p.InStock,
-                                    Price = (decimal)p.Price
-                                })
-                                .ToListAsync();
-        return Results.Ok(products);
-    }
-    catch (Exception ex)
-    {
-        // Log the exception details
-        logger.LogError(ex, "An error occurred while processing the request.");
-
-        // Return a 500 Internal Server Error response
-        return Results.Problem($"An error occurred while processing your request: {ex.Message}", statusCode: 500);
-    }
-    
-    // return await dbx.Products
-    //                 .Include(p => p.Brand)
-    //                 .Include(p => p.Category)
-    //                 .ToListAsync();
-
-                    
+    return await dbx.Products.ToListAsync();        
 });
 // .WithName("GetProducts")
 // .WithOpenApi();
@@ -163,10 +118,7 @@ app.MapGet("/products/{id}", [Authorize] async(ProductsDbContext dbx, int id) =>
     // }
     // return Results.Ok(product);
 
-    var product = await dbx.Products
-                           .Include(p => p.Brand)
-                           .Include(p => p.Category)
-                           .FirstOrDefaultAsync(p => p.Id == id);
+    var product = await dbx.Products.FirstOrDefaultAsync(p => p.Id == id);
     if (product == null)
     {
         return Results.NotFound();
@@ -182,17 +134,10 @@ app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dt
         Name = dto.Name,
         Id = dto.Id,
         Description = dto.Description,
-        Brand = new Brand
-        {
-            Id = dto.Brand.Id,
-            Name = dto.Brand.Name
-        },
-        Category = new Category
-        {
-            Id = dto.Category.Id,
-            Name = dto.Category.Name,
-            Description = dto.Category.Description
-        },
+        BrandName = dto.BrandName,
+        BrandDescription = dto.BrandDescription,
+        CategoryName = dto.CategoryName,
+        CategoryDescription = dto.CategoryDescription,
         InStock = dto.InStock,
         Price = (double)dto.Price
     };
@@ -208,5 +153,5 @@ app.Run();
 //     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 // }
 
-record ProductTemp(int Id, string? Name, string? Description, int BrandId, string? BrandName, int CategoryId, string? CategoryName, bool InStock, double Price);
+record ProductTemp(int Id, string? Name, string? Description, string? BrandName, string? BrandDescription, string? CategoryName, string? CategoryDescription, bool InStock, double Price);
 //public record ProductDto(string Name, string Description, int BrandId, int CategoryId, bool InStock, double Price);

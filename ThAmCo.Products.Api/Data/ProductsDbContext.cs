@@ -84,56 +84,35 @@ namespace ThAmCo.Products.Api.Data
             base.OnModelCreating(modelBuilder);
 
             // Define relationships if needed
-            modelBuilder.Entity<Product>(x =>
-            {
-                x.HasOne(p => p.Brand)
-                 .WithMany()
-                 .HasForeignKey(p => p.BrandId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-                x.HasOne(p => p.Category)
-                 .WithMany()
-                 .HasForeignKey(p => p.CategoryId)
-                 .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            // Seed data
-            modelBuilder.Entity<Brand>().HasData(
-                new Brand { Id = 1, Name = "TechCorp" },
-                new Brand { Id = 2, Name = "EcoBrands"}
-            );
-
-            modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name = "Electronics", Description = "Gadgets and Devices" },
-                new Category { Id = 2, Name = "Home Appliances", Description = "Household essentials"}
-            );
 
             modelBuilder.Entity<Product>().HasData(
                 new Product
                 {
                     Id = 1,
-                    Name = "Smartphone X",
-                    Description = "Latest flagship smartphone",
-                    BrandId = 1,
-                    CategoryId = 1,
+                    Name = "Goblin Serum",
+                    Description = "An experimental serum enhancing strength, agility, and intellect. Handle with caution due to potential side effects.",
+                    BrandName = "Oscorp Industries",
+                    BrandDescription = "Pioneering advancements in biotechnology, engineering, and genetic research.",
+                    CategoryName = "Biotech Enhancements",
+                    CategoryDescription = "Cutting-edge innovations designed to augment human capabilities.",
                     InStock = true,
-                    Price = 999.99
+                    Price = 199.99
                 },
                 new Product
                 {
                     Id = 2,
-                    Name = "EcoFriendly Blender",
-                    Description = "High-efficiency kitchen blender",
-                    BrandId = 2,
-                    CategoryId = 2,
+                    Name = "Nano suit",
+                    Description = "A Full suit of armour made of nanotechnology. Provides enhanced protection and strength.",
+                    BrandName = "Stark Industries",
+                    BrandDescription = "To put a suit of armouny around the world.",
+                    CategoryName = "Nano Technology",
+                    CategoryDescription = "Innovative technologies manipulating matter at the atomic scale for advanced applications.",
                     InStock = true,
-                    Price = 79.99
+                    Price = 99999.99
                 }
             );
         }
 
         public DbSet<Product> Products { get; set; } 
-        public DbSet<Brand> Brands { get; set; }
-        public DbSet<Category> Categories { get; set; }
     }
 }
