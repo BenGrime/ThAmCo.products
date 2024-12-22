@@ -25,36 +25,36 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ProductsDbContext>(options =>
 {
-    var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
-        sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(6),
-            errorNumbersToAdd: null
-        )
-    );
-
-    // if (builder.Environment.IsDevelopment())
-    // {
-    //     // var folder = Environment.SpecialFolder.LocalApplicationData;
-    //     // var path = Environment.GetFolderPath(folder);
-    //     // var dbPath = System.IO.Path.Join(path, "ThAmCo.Products.db");
-    //     // options.UseSqlite($"Data Source={dbPath}");
-    //     // options.EnableDetailedErrors();
-    //     // options.EnableSensitiveDataLogging();
-    // }
-    // else
-    // {
-    //     //var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-    //     var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-    //     options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
+    // var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+    // options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
     //     sqlOptions.EnableRetryOnFailure(
     //         maxRetryCount: 5,
     //         maxRetryDelay: TimeSpan.FromSeconds(6),
     //         errorNumbersToAdd: null
-    //         )
-    //     );
-    // }
+    //     )
+    // );
+
+    if (builder.Environment.IsDevelopment())
+    {
+        var folder = Environment.SpecialFolder.LocalApplicationData;
+        var path = Environment.GetFolderPath(folder);
+        var dbPath = System.IO.Path.Join(path, "ThAmCo.Products.db");
+        options.UseSqlite($"Data Source={dbPath}");
+        options.EnableDetailedErrors();
+        options.EnableSensitiveDataLogging();
+    }
+    else
+    {
+        //var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+        options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(6),
+            errorNumbersToAdd: null
+            )
+        );
+    }
 });
 
 

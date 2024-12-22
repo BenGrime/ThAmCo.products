@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ThAmCo.Products.Api.Data; // Update with your actual namespace
-using ThAmCo.Products.Api.Models; // Update with your actual namespace
 
 namespace ThAmCo.Products.Api.Controllers // Update with your actual namespace
 {
@@ -11,9 +10,9 @@ namespace ThAmCo.Products.Api.Controllers // Update with your actual namespace
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductDbContext _context;
+        private readonly ProductsDbContext _context;
 
-        public ProductsController(ProductDbContext context)
+        public ProductsController(ProductsDbContext context)
         {
             _context = context;
         }
@@ -35,6 +34,26 @@ namespace ThAmCo.Products.Api.Controllers // Update with your actual namespace
             }
 
             return product;
+        }
+
+         [HttpPost]
+        public async Task<IActionResult> PostProduct(ProductDto dto)
+        {
+            var product = new Product
+            {
+                Name = dto.Name,
+                Id = dto.Id,
+                Description = dto.Description,
+                BrandName = dto.BrandName,
+                BrandDescription = dto.BrandDescription,
+                CategoryName = dto.CategoryName,
+                CategoryDescription = dto.CategoryDescription,
+                InStock = dto.InStock,
+                Price = (double)dto.Price
+            };
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
