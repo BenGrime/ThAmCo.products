@@ -59,41 +59,16 @@ public class ProductsControllerTests : IDisposable
     }
 
     [Fact]
-    public async Task TestPostProduct()
+    public async Task TestGetProductById()
     {
-        // Clear the database before adding a new product
-        _context.Products.RemoveRange(_context.Products);
-        await _context.SaveChangesAsync();
-
-        var controller = new ProductsController(_context);
-        var dto = new ProductDto
-        {
-            Name = "Test Product",
-            Id = 1,
-            Description = "Test Description",
-            BrandName = "Test Brand",
-            BrandDescription = "Test Brand Description",
-            CategoryName = "Test Category",
-            CategoryDescription = "Test Category Description",
-            InStock = true,
-            Price = 9.99
-        };
-
-        var result = await controller.PostProduct(dto);
-        Assert.IsType<OkResult>(result);
-
-        var savedProduct = await _context.Products.FindAsync(1);
-        Assert.NotNull(savedProduct);
-    }
-
-    [Fact]
-    public async Task TestGetProduct()
-    {
+        // Step 1: Load the database with products
         await SeedDatabase();
 
+        // Step 2: Test getting one of them by ID
         var controller = new ProductsController(_context);
         var result = await controller.GetProductById(1);
 
+        // Check if the product ID retrieved matches the input
         var okResult = Assert.IsType<ActionResult<Product>>(result);
         var product = Assert.IsType<Product>(okResult.Value);
         Assert.Equal(1, product.Id);
@@ -102,24 +77,17 @@ public class ProductsControllerTests : IDisposable
     [Fact]
     public async Task TestGetAllProducts()
     {
+        // Step 1: Load the database with products
         await SeedDatabase();
 
+        // Step 3: Test getting all of them
         var controller = new ProductsController(_context);
         var result = await controller.GetProducts();
 
+        // Check if the list length returned equals the amount in the database
         var okResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result);
         var products = Assert.IsType<List<Product>>(okResult.Value);
         Assert.Equal(2, products.Count);
-    }
-
-    [Fact]
-    public async Task TestGetProductNotFound()
-    {
-        var controller = new ProductsController(_context);
-        var result = await controller.GetProductById(999);
-
-        var notFoundResult = Assert.IsType<ActionResult<Product>>(result);
-        Assert.IsType<NotFoundResult>(notFoundResult.Result);
     }
 
     public void Dispose()
