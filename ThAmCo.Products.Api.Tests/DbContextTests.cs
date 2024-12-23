@@ -2,15 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using ThAmCo.Products.Api.Data;
+using ThAmCo.Products.Api.Controllers;
 using Xunit;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ThAmCo.Products.Api.Tests
 {
-    public class UnitTest1
+    public class DbContextTests
     {
         private DbContextOptions<ProductsDbContext> _dbContextOptions;
 
-        public UnitTest1()
+        public DbContextTests()
         {
             _dbContextOptions = new DbContextOptionsBuilder<ProductsDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")

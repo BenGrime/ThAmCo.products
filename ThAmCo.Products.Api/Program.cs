@@ -25,14 +25,6 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ProductsDbContext>(options =>
 {
-    // var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-    // options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
-    //     sqlOptions.EnableRetryOnFailure(
-    //         maxRetryCount: 5,
-    //         maxRetryDelay: TimeSpan.FromSeconds(6),
-    //         errorNumbersToAdd: null
-    //     )
-    // );
 
     if (builder.Environment.IsDevelopment())
     {
@@ -45,7 +37,6 @@ builder.Services.AddDbContext<ProductsDbContext>(options =>
     }
     else
     {
-        //var cs = "Server=tcp:thamco-products-sql-v1.database.windows.net,1433;Initial Catalog=ThAmCo-products-db;Persist Security Info=False;User ID=ThAmCo-admin;Password=Middlesbrough37!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         var cs = builder.Configuration.GetConnectionString("DefaultConnection");
         options.UseSqlServer(cs, sqlServerOptionsAction: sqlOptions =>
         sqlOptions.EnableRetryOnFailure(
@@ -71,28 +62,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapControllers();
-
-// var summaries = new[]
-// {
-//     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-// };
-
-// app.MapGet("/weatherforecast", () =>
-// {
-//     var forecast =  Enumerable.Range(1, 5).Select(index =>
-//         new WeatherForecast
-//         (
-//             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-//             Random.Shared.Next(-20, 55),
-//             summaries[Random.Shared.Next(summaries.Length)]
-//         ))
-//         .ToArray();
-//     return forecast;
-// })
-// .WithName("GetWeatherForecast")
-// .WithOpenApi();
-
 var products = new[] {
     new ProductTemp(1, "Smartphone X", "Latest flagship smartphone", "TechCorp", "Leading innovation in electronics", "Electronics", "Devices that enhance daily life through technology", true, 999.99),
     new ProductTemp(2, "Smart TV", "4K UHD Smart TV", "TechCorp", "Pioneering 4K display technology", "Electronics", "High-quality entertainment through cutting-edge tech", true, 799.99),
@@ -111,13 +80,6 @@ app.MapGet("/products" , [Authorize] async(ProductsDbContext dbx)  =>
 // .WithOpenApi();
 app.MapGet("/products/{id}", [Authorize] async(ProductsDbContext dbx, int id) =>
 {
-    // var p = products.FirstOrDefault(p => p.Id == id);
-    // if (product == null)
-    // {
-    //     return Results.NotFound();
-    // }
-    // return Results.Ok(product);
-
     var product = await dbx.Products.FirstOrDefaultAsync(p => p.Id == id);
     if (product == null)
     {
@@ -148,10 +110,4 @@ app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dt
 
 app.Run();
 
-// record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-// {
-//     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-// }
-
 record ProductTemp(int Id, string? Name, string? Description, string? BrandName, string? BrandDescription, string? CategoryName, string? CategoryDescription, bool InStock, double Price);
-//public record ProductDto(string Name, string Description, int BrandId, int CategoryId, bool InStock, double Price);
