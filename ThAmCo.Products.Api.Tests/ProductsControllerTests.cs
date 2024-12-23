@@ -3,6 +3,7 @@ using ThAmCo.Products.Api.Controllers;
 using ThAmCo.Products.Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class ProductsControllerTests
@@ -23,20 +24,35 @@ public class ProductsControllerTests
         await context.SaveChangesAsync();
 
         // Seed the database with initial data
-        var product = new Product
+        var products = new List<Product>
         {
-            Id = 1,
-            Name = "Test Product",
-            Description = "Test Description",
-            BrandName = "Test Brand",
-            BrandDescription = "Test Brand Description",
-            CategoryName = "Test Category",
-            CategoryDescription = "Test Category Description",
-            InStock = true,
-            Price = 9.99
+            new Product
+            {
+                Id = 1,
+                Name = "Test Product 1",
+                Description = "Test Description 1",
+                BrandName = "Test Brand 1",
+                BrandDescription = "Test Brand Description 1",
+                CategoryName = "Test Category 1",
+                CategoryDescription = "Test Category Description 1",
+                InStock = true,
+                Price = 9.99
+            },
+            new Product
+            {
+                Id = 2,
+                Name = "Test Product 2",
+                Description = "Test Description 2",
+                BrandName = "Test Brand 2",
+                BrandDescription = "Test Brand Description 2",
+                CategoryName = "Test Category 2",
+                CategoryDescription = "Test Category Description 2",
+                InStock = true,
+                Price = 19.99
+            }
         };
 
-        context.Products.Add(product);
+        context.Products.AddRange(products);
         await context.SaveChangesAsync();
     }
 
@@ -99,7 +115,7 @@ public class ProductsControllerTests
 
             var okResult = Assert.IsType<ActionResult<IEnumerable<Product>>>(result);
             var products = Assert.IsType<List<Product>>(okResult.Value);
-            Assert.Single(products);
+            Assert.Equal(2, products.Count);
         }
     }
 
