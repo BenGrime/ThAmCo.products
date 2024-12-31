@@ -107,6 +107,37 @@ app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dt
     return responseMessage;
 });
 
+app.MapDelete("/products/{id}", [Authorize] async (ProductsDbContext dbx, int id) =>
+{
+    var product = await dbx.Products.FirstOrDefaultAsync(p => p.Id == id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+    dbx.Products.Remove(product);
+    await dbx.SaveChangesAsync();
+    return Results.Ok();
+});
+
+app.MapPut("/products/{id}", [Authorize] async (ProductsDbContext dbx, int id, ProductDto dto) =>
+{
+    var product = await dbx.Products.FirstOrDefaultAsync(p => p.Id == id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+    product.Name = dto.Name;
+    product.Description = dto.Description;
+    product.BrandName = dto.BrandName;
+    product.BrandDescription = dto.BrandDescription;
+    product.CategoryName = dto.CategoryName;
+    product.CategoryDescription = dto.CategoryDescription;
+    product.InStock = dto.InStock;
+    product.Price = (double)dto.Price;
+    await dbx.SaveChangesAsync();
+    return Results.Ok();
+});
+
 app.Run();
 
 record ProductTemp(int Id, string? Name, string? Description, string? BrandName, string? BrandDescription, string? CategoryName, string? CategoryDescription, bool InStock, double Price);
