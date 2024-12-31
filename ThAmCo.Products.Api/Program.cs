@@ -89,7 +89,7 @@ app.MapGet("/products/{id}", [Authorize] async(ProductsDbContext dbx, int id) =>
     
 });
 
-app.MapPost("/products",  async (ProductsDbContext dbx, ProductDto dto) =>
+app.MapPost("/products", [Authorize] async (ProductsDbContext dbx, ProductDto dto) =>
 {
     var product = new Product
     {
